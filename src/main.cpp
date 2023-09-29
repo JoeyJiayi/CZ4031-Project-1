@@ -26,7 +26,7 @@ void experiment1(Disk *disk, BPlusTree *tree)
     cout << "Experiment 1:" << endl;
 
     //opening of data file
-    ifstream file("src/data/games.txt");
+    ifstream file("../data/games.txt");
     if (!file.is_open())
     {
         cout << "File failed to open." << endl;
@@ -84,44 +84,36 @@ void experiment2(BPlusTree *tree)
     cout << endl;
 }
 
-  /*
+ /*
   =============================================================
-  Experiment 3: retrieve those movies with the “FG_PCT_home” equal to 0.5 and report the following statistics:
-• the number of index nodes the process accesses;
-• the number of data blocks the process accesses;
-• the average of “FG3_PCT_home” of the records that are returned;
-• the running time of the retrieval process (please specify the method
-you use for measuring the running time of a piece of code)
-• the number of data blocks that would be accessed by a brute-force linear scan method (i.e., it scans the data blocks one by one) and its
-running time (for comparison)
+  Experiment 3: Retrieve those games with the “FG_PCT_home” equal to 0.5 and report the following statistics:
   =============================================================
   */
-void experiment3(Disk *disk, BPlusTree *tree){
+ void experiment3(Disk *disk, BPlusTree *tree)
+{
     tree->setNumOfNodesSearched(0);
+
     chrono::high_resolution_clock::time_point before = chrono::high_resolution_clock::now();
-    vector<Record *> *result = tree->searchRecord(0.5);
+    vector<Record *> *retrieved = tree->searchRecord(0.5);
     chrono::high_resolution_clock::time_point after = chrono::high_resolution_clock::now();
-    chrono::duration<double> timeTaken = chrono::duration_cast<chrono::duration<double>>(after - before);
+    chrono::duration<double> timeTaken = chrono::duration_cast<chrono::duration<double> >(after - before);  // time taken to retrieve the movies 
 
-    //getting the average of "FG3_PCT_home" of the records that are returned
-    unordered_set<size_t> resultSet;
+    // finding the FG3_PCT_home values of all records where FG_PCT_Home = 0.5
+    unordered_set<size_t> answer;
     float totalFG3 = 0;
-    for (Record *r : *result)
+    for (Record *r : *retrieved)
     {
-        resultSet.insert(disk->getBlockId(r));
+        answer.insert(disk->getBlockId(r));
         totalFG3 += r->FG3_PCT_home;
-        // cout << "Rating = " << r->averageRating << endl;
     }
-    //totalRating /= 10; not sure what is this for.. commenting for now
-
 
     //brute force linear scan of disk, block by block, record by record
-    int numOfBlocksAcc = 0;
+    int bruteForceBlocks = 0;
     Record *r;
     before = chrono::high_resolution_clock::now();
     for (int i = 0; i < disk->getNumOfBlocksUsed(); i++)
     {
-        numOfBlocksAcc++;
+        bruteForceBlocks++;
         for (int j = 0; j < disk->getRecordsPerBlock(); j++)
         {
             r = disk->getRecord(i, j);
@@ -132,15 +124,15 @@ void experiment3(Disk *disk, BPlusTree *tree){
         }
     }
     after = chrono::high_resolution_clock::now();
-    chrono::duration<double> bruteTimeTaken = chrono::duration_cast<chrono::duration<double>>(after - before);
+    chrono::duration<double> bruteForceTime = chrono::duration_cast<chrono::duration<double> >(after - before); 
 
     cout << "Experiment 3:" << endl;
-    cout << "Number of index blocks accessed = " << tree->getNumOfNodesSearched() << endl;
-    cout << "Number of data blocks accessed = " << resultSet.size() << endl;
-    cout << "Average FG3_PCT_home = " << totalFG3 / result->size() << endl;
-    cout << "Running time for retrieval process = " << timeTaken.count() << "s" << endl;
-    cout << "Number of data blocks accessed by brute force method = " << numOfBlocksAcc << endl;
-    cout << "Running time for retrival by brute force method = " << bruteTimeTaken.count() << "s" << endl;
+    cout << "Number of index nodes processed: " << tree->getNumOfNodesSearched() << endl;
+    cout << "Number of data blocks processed: " << answer.size() << endl;
+    cout << "Average of FG3_PCT_home of all the records returned: " << totalFG3 / retrieved->size() << endl;
+    cout << "Running time of retrieval process: " << timeTaken.count() << "s" << endl;
+    cout << "Number of data blocks accessed by brute-force linear scan method: " << bruteForceBlocks << endl;
+    cout << "Running time of brute-force linear scan method: " << bruteForceTime.count() << "s" << endl;
     cout << endl;
 }
 
