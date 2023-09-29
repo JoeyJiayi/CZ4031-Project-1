@@ -152,6 +152,7 @@ void BPlusTree::deleteKey(float key)
     }
 }
 
+//Utility function to check if one node is the parent of another
 Node *BPlusTree::findParentNode(Node *parentNode, Node *childNode)
 {
     int key, idx;

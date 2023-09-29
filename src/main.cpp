@@ -1,4 +1,4 @@
- #include <iostream>
+#include <iostream>
 #include <string>
 #include <fstream>
 #include <sstream>
@@ -8,7 +8,7 @@
 #include "b_plus_tree/b_plus_tree.h"
 /*
 #include "storage/disk.cpp"
-#include "b_plus_tree/b_plus_tree_insert.cpp" 
+#include "b_plus_tree/b_plus_tree_insert.cpp"
 #include "b_plus_tree/b_plus_tree_remove.cpp"
 #include "b_plus_tree/b_plus_tree_search.cpp"
 */
@@ -25,7 +25,8 @@ void experiment1(Disk *disk, BPlusTree *tree)
     cout << "" << endl;
     cout << "Experiment 1:" << endl;
 
-    ifstream file("../data/games.txt");
+    //opening of data file
+    ifstream file("src/data/games.txt");
     if (!file.is_open())
     {
         cout << "File failed to open." << endl;
@@ -35,6 +36,8 @@ void experiment1(Disk *disk, BPlusTree *tree)
     string line;
     int numRecords = 0;
 
+
+    //parsing of data
     getline(file, line);
     while(getline(file, line)){
         istringstream iss(line);
@@ -48,13 +51,14 @@ void experiment1(Disk *disk, BPlusTree *tree)
         getline(iss, AST_home, '\t');
         getline(iss, REB_home, '\t');
         getline(iss, HOME_TEAM_WINS, '\t');
-        
+
         newRecord = (*disk).insertRecord(GAME_DATE_EST, TEAM_ID_HOME, stoi(PTS_home), std::stod(FG_PCT_home), std::stod(FT_PCT_home), std::stod(FG3_PCT_home), stoi(AST_home), stoi(REB_home), stoi(HOME_TEAM_WINS));
         tree->insert(newRecord->FG_PCT_home, newRecord);
         numRecords++;
     }
     file.close();
 
+    //experiment 1 log
     cout << "Number of records: " << numRecords << endl;
     cout << "Size of a record: " << sizeof(Record) << " bytes" << endl;
     cout << "Number of records stored in a block: " << (*disk).getRecordsPerBlock() << endl;
@@ -69,6 +73,7 @@ void experiment1(Disk *disk, BPlusTree *tree)
 */
 void experiment2(BPlusTree *tree)
 {
+    //experiment 2 log
     cout << "" << endl;
     cout << "Experiment 2:" << endl;
     cout << "Parameter n = " << tree->getMaxNumOfKeys() << endl;
@@ -133,18 +138,18 @@ int main()
 
     experiment2(&tree);
 }
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

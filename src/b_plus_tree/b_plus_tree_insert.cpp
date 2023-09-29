@@ -3,7 +3,7 @@
 
 void BPlusTree::insert(float key, Record *recordPtr)
 {
-    // duplicate records being inserted
+    // Case 1:duplicate records being inserted
     std::vector<Record *> *records = this->searchRecord(key);
     if (records != nullptr)
     {
@@ -11,23 +11,23 @@ void BPlusTree::insert(float key, Record *recordPtr)
         return;
     }
 
-    // if no root exists, instantiate a B+ tree
+    // Case 2a:if no root exists, instantiate a B+ tree
     if (this->root == nullptr)
     {
         this->root = new Node(true); // create a new node in main memory and set it as root
         this->numOfNodes++;
         this->levels++;
-        this->root->nextLeaf = nullptr; 
+        this->root->nextLeaf = nullptr;
         this->root->keys.push_back(key);
         this->root->records.push_back(std::vector<Record *>(1, recordPtr));
         return;
     }
 
-    Node *curNode = this->root; 
+    Node *curNode = this->root;
     std::vector<Node *> parentNodes(1, nullptr);
     int idx = 0;
 
-    //  Else if root exists already, find the leaf node where key should be inserted
+    //  Case 2b:Else if root exists already, find the leaf node where key should be inserted
     while (!curNode->isLeaf)
     {
         idx = std::upper_bound(curNode->keys.begin(), curNode->keys.end(), key) - curNode->keys.begin();
@@ -35,7 +35,7 @@ void BPlusTree::insert(float key, Record *recordPtr)
         curNode = curNode->pointers.at(idx);
     }
 
-    // If leaf node < max keys, nsert the key and record into the leaf node at the sorted index
+    // If leaf node < max keys, insert the key and record into the leaf node at the sorted index
     idx = std::upper_bound(curNode->keys.begin(), curNode->keys.end(), key) - curNode->keys.begin();
     curNode->keys.insert(curNode->keys.begin() + idx, key);
     curNode->records.insert(curNode->records.begin() + idx, std::vector<Record *>(1, recordPtr));
@@ -88,7 +88,7 @@ void BPlusTree::insert(float key, Record *recordPtr)
 Node *BPlusTree::splitLeafNode(Node *curNode)
 {
     //Redistribute keys and record pointers among current node and new node
-    
+
     Node *splitNode = new Node(true);
     this->numOfNodes++;
 
@@ -102,16 +102,16 @@ Node *BPlusTree::splitLeafNode(Node *curNode)
     splitNode->nextLeaf = curNode->nextLeaf;
     curNode->nextLeaf = splitNode;
 
-    // Old node has ceiling(N+1/2) keys
-    // New node (split node) will have floor(N+1/2) keys
+    // Old node has ceiling[(N+1)/2] keys
+    // New node (split node) will have floor[(N+1)/2] keys
 
     return splitNode;
 }
 
 Node *BPlusTree::splitInternalNode(Node *curNode, float *key)
 {
-    // Redistribute keys and record pointers among current node and new node
-    
+    // Redistribute keys and record pointers among current node and new node (For non-leaf node)
+
 
     Node *splitNode = new Node(false);
     this->numOfNodes++;

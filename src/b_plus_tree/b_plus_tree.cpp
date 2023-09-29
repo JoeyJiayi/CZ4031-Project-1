@@ -8,14 +8,18 @@ Node::Node(bool isLeaf){
 Node::~Node(){}
 
 // methods for node
+
+//access next leaf node of the tree
 Node* Node::getNextLeaf(){
     return this->nextLeaf;
 }
 
+//obtain all keys stored within a node
 std::vector<float> Node::getKeys(){
     return this->keys;
 }
 
+//obtain all records stored in a particular node
 std::vector<Record*> Node::getRecords(int idx){
     return this->records.at(idx);
 }
@@ -32,28 +36,33 @@ BPlusTree::BPlusTree(int blockSize){
 
 BPlusTree::~BPlusTree(){}
 
-// methods for b_tree
+// methods for b+ tree
 Node* BPlusTree::getRoot(){
     return this->root;
 }
 
+//creating the b+ tree (setting its root node)
 void BPlusTree::setRoot(Node *r){
     this->root = r;
     return;
 }
 
+//maximum number of keys that the b+ tree can contain
 int BPlusTree::getMaxNumOfKeys(){
     return this->maxNumOfKeys;
 }
 
+//number of nodes currently contained within the b+ tree
 int BPlusTree::getTotalNumOfNodes(){
     return this->numOfNodes;
 }
 
+//number of levels of the b+ tree
 int BPlusTree::getNumOfLevels(){
     return this->levels;
 }
 
+//get block size of b+ tree
 short BPlusTree::getBlockSize(){
     return this->blockSize;
 }
@@ -66,6 +75,7 @@ void BPlusTree::setNumOfNodesSearched(int num){
     this->numOfNodesSearched = num;
 }
 
+//print all the keys contained within a node
 void BPlusTree::printKeys(Node *node){
     std::cout << "{ ";
     for (float key : node->keys){
@@ -74,6 +84,7 @@ void BPlusTree::printKeys(Node *node){
     std::cout << "}\n";
 }
 
+//display the b+ tree
 void BPlusTree::printTree(Node *tmp){
     std::vector<Node *> n;
     n.push_back(tmp);
