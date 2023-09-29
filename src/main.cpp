@@ -91,6 +91,53 @@ you use for measuring the running time of a piece of code)
 running time (for comparison)
   =============================================================
   */
+void experiment3(Disk *disk, BPlusTree *tree){
+    tree->setNumOfNodesSearched(0);
+    chrono::high_resolution_clock::time_point before = chrono::high_resolution_clock::now();
+    vector<Record *> *result = tree->searchRecord(0.5);
+    chrono::high_resolution_clock::time_point after = chrono::high_resolution_clock::now();
+    chrono::duration<double> timeTaken = chrono::duration_cast<chrono::duration<double>>(after - before);
+
+    //getting the average of "FG3_PCT_home" of the records that are returned
+    unordered_set<size_t> resultSet;
+    float totalFG3 = 0;
+    for (Record *r : *result)
+    {
+        resultSet.insert(disk->getBlockId(r));
+        totalFG3 += r->FG3_PCT_home;
+        // cout << "Rating = " << r->averageRating << endl;
+    }
+    //totalRating /= 10; not sure what is this for.. commenting for now
+
+
+    //brute force linear scan of disk, block by block, record by record
+    int numOfBlocksAcc = 0;
+    Record *r;
+    before = chrono::high_resolution_clock::now();
+    for (int i = 0; i < disk->getNumOfBlocksUsed(); i++)
+    {
+        numOfBlocksAcc++;
+        for (int j = 0; j < disk->getRecordsPerBlock(); j++)
+        {
+            r = disk->getRecord(i, j);
+            if (r->FG_PCT_home == 0.5)
+            {
+                continue;
+            }
+        }
+    }
+    after = chrono::high_resolution_clock::now();
+    chrono::duration<double> bruteTimeTaken = chrono::duration_cast<chrono::duration<double>>(after - before);
+
+    cout << "Experiment 3:" << endl;
+    cout << "Number of index blocks accessed = " << tree->getNumOfNodesSearched() << endl;
+    cout << "Number of data blocks accessed = " << resultSet.size() << endl;
+    cout << "Average FG3_PCT_home = " << totalFG3 / result->size() << endl;
+    cout << "Running time for retrieval process = " << timeTaken.count() << "s" << endl;
+    cout << "Number of data blocks accessed by brute force method = " << numOfBlocksAcc << endl;
+    cout << "Running time for retrival by brute force method = " << bruteTimeTaken.count() << "s" << endl;
+    cout << endl;
+}
 
   /*
   =============================================================
@@ -132,6 +179,8 @@ int main()
     experiment1(&disk, &tree);
 
     experiment2(&tree);
+
+    experiment3(&disk, &tree);
 }
  
  
