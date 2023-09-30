@@ -153,7 +153,7 @@ void experiment4(Disk *disk, BPlusTree *tree)
     vector<Record *> result;
     vector<float> keys;
     float lower = 0.6;
-    float upper = tree->findLargestKey();
+    float upper = 1.0;
     int lowerIdx, upperIdx, leafNodesSearched = 0;
     bool searching = true;
     tree->setNumOfNodesSearched(0);
@@ -177,7 +177,7 @@ void experiment4(Disk *disk, BPlusTree *tree)
 
         upperIdx = upperIdx == keys.size() ? upperIdx - 1 : upperIdx;
 
-        if (keys.at(upperIdx) >= upper)
+        if (keys.at(upperIdx) >= upper || keys.at(upperIdx) >= tree->findLargestKey())
         {
             searching = false;
         }
