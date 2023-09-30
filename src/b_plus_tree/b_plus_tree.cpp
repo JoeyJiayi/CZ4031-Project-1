@@ -117,3 +117,16 @@ void BPlusTree::printTree(Node *tmp){
     } while (tmp != nullptr);
     std::cout << "\n";
 }
+
+// Function to find the largest key in the B+ tree
+float BPlusTree::findLargestKey() {
+    Node* currentNode = root;
+
+    // Traverse to the rightmost leaf node, which will contain the largest key
+    while (!currentNode->isLeaf) {
+        currentNode = currentNode->pointers.back();
+    }
+
+    // The largest key will be the last key in the rightmost leaf node
+    return currentNode->keys.back();
+}

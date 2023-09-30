@@ -8,12 +8,12 @@
 class Node {
     private:
         bool isLeaf; // whether this node is a leaf node
-        Node *nextLeaf; 
+        Node *nextLeaf;
         std::vector<Node*> pointers; // a pointer to an array of nodes in this disk
         std::vector<float> keys; // a pointer to an array of keys in this node
-        std::vector< std::vector<Record*> > records; 
+        std::vector< std::vector<Record*> > records;
         int numOfKeys; // current number of keys in this node
-    
+
     public:
         // constructors
         Node(bool isLeaf);
@@ -22,7 +22,7 @@ class Node {
         Node *getNextLeaf();
         std::vector<float> getKeys();
         std::vector<Record*> getRecords(int idx);
-        
+
     friend class BPlusTree;
 };
 
@@ -32,15 +32,15 @@ class BPlusTree {
         Node* root; // pointer to root if it's loaded
         int maxNumOfKeys; // maximum number of keys in a node
         int numOfNodes; // number of nodes in B+ tree
-        int levels; 
+        int levels;
         short blockSize; // size of block == size of node
-        short numOfNodesSearched; // number of nodes that is accessed when searching 
+        short numOfNodesSearched; // number of nodes that is accessed when searching
 
     public:
         //constructors
         BPlusTree(int blockSize);
         ~BPlusTree();
-        
+
         // methods
         Node* getRoot();
         void setRoot(Node *node);
@@ -55,6 +55,7 @@ class BPlusTree {
 
         void printKeys(Node *node);
         void printTree(Node *node);
+        float findLargestKey();
         Node* searchNode(float key);
         std::vector<Record*>* searchRecord(float key);
         void insert(float key, Record *recordPtr);
