@@ -63,7 +63,7 @@ public:
     void insert(float key, Record *recordPtr);
     Node *splitLeafNode(Node *curNode);
     Node *splitInternalNode(Node *curNode, float *key);
-    void deleteKey(float key);
+    void deleteKeyBelow(float key);
     Node *findParentNode(Node *currentNode, Node *childNode);
     void removeInternal(float key, Node *parentNode, Node *nodeToDelete);
     void updateParentKeys(Node *curNode, Node *parentNode, int parentIdx, std::vector<Node *> &parents, std::vector<int> &prevIdxs);

@@ -1,19 +1,19 @@
 #include "b_plus_tree.h"
 #include <algorithm>
 
-void BPlusTree::deleteKey(float key)
+void BPlusTree::deleteKeyBelow(float key)
 {
 
     while (true)
     {
 
-        std::cout << "start!" << std::endl;
+        // std::cout << "start!" << std::endl;
 
-        this->printTree(this->root);
+        // this->printTree(this->root);
 
         if (this->root == nullptr)
         {
-            std::cout << "Tree is empty!" << std::endl;
+            // std::cout << "Tree is empty!" << std::endl;
             return;
         }
 
@@ -43,10 +43,10 @@ void BPlusTree::deleteKey(float key)
         idx = std::lower_bound(curNode->keys.begin(), curNode->keys.end(), 0) - curNode->keys.begin();
         if (curNode->keys[0] > key)
         {
-            std::cout << curNode->keys[0] << ">" << key << std::endl;
+            // std::cout << curNode->keys[0] << ">" << key << std::endl;
             break;
         }
-        std::cout << curNode->keys[0] << std::endl;
+        // std::cout << curNode->keys[0] << std::endl;
         curNode->keys.erase(curNode->keys.begin() + idx);
         curNode->records.erase(curNode->records.begin() + idx);
 

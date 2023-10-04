@@ -244,7 +244,7 @@ void experiment5(Disk *disk, BPlusTree *tree)
 {
     float keysToDeleteBelow = 0.35;
     chrono::high_resolution_clock::time_point before = chrono::high_resolution_clock::now();
-    tree->deleteKey(keysToDeleteBelow);
+    tree->deleteKeyBelow(keysToDeleteBelow);
     chrono::high_resolution_clock::time_point after = chrono::high_resolution_clock::now();
     chrono::duration<double> timeTaken = chrono::duration_cast<chrono::duration<double>>(after - before);
 
