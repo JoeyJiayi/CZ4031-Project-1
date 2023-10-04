@@ -15,18 +15,18 @@
 
 using namespace std;
 
- /*
-  =============================================================
-  Experiment 1: store the data (which is about NBA games and described in Part 4) on the disk (as specified in Part 1) and report the following statistics:
-  =============================================================
+/*
+ =============================================================
+ Experiment 1: store the data (which is about NBA games and described in Part 4) on the disk (as specified in Part 1) and report the following statistics:
+ =============================================================
 */
 void experiment1(Disk *disk, BPlusTree *tree)
 {
     cout << "" << endl;
     cout << "Experiment 1:" << endl;
 
-    //opening of data file
-    ifstream file("src/data/games.txt");
+    // opening of data file
+    ifstream file("../data/games.txt");
     if (!file.is_open())
     {
         cout << "File failed to open." << endl;
@@ -36,10 +36,10 @@ void experiment1(Disk *disk, BPlusTree *tree)
     string line;
     int numRecords = 0;
 
-
-    //parsing of data
+    // parsing of data
     getline(file, line);
-    while(getline(file, line)){
+    while (getline(file, line))
+    {
         istringstream iss(line);
         string GAME_DATE_EST, TEAM_ID_HOME, PTS_home, FG_PCT_home, FT_PCT_home, FG3_PCT_home, AST_home, REB_home, HOME_TEAM_WINS;
         getline(iss, GAME_DATE_EST, '\t');
@@ -58,7 +58,7 @@ void experiment1(Disk *disk, BPlusTree *tree)
     }
     file.close();
 
-    //experiment 1 log
+    // experiment 1 log
     cout << "Number of records: " << numRecords << endl;
     cout << "Size of a record: " << sizeof(Record) << " bytes" << endl;
     cout << "Number of records stored in a block: " << (*disk).getRecordsPerBlock() << endl;
@@ -73,7 +73,7 @@ void experiment1(Disk *disk, BPlusTree *tree)
 */
 void experiment2(BPlusTree *tree)
 {
-    //experiment 2 log
+    // experiment 2 log
     cout << "" << endl;
     cout << "Experiment 2:" << endl;
     cout << "Parameter n = " << tree->getMaxNumOfKeys() << endl;
@@ -84,11 +84,11 @@ void experiment2(BPlusTree *tree)
     cout << endl;
 }
 
- /*
-  =============================================================
-  Experiment 3: Retrieve those games with the “FG_PCT_home” equal to 0.5 and report the following statistics:
-  =============================================================
-  */
+/*
+ =============================================================
+ Experiment 3: Retrieve those games with the “FG_PCT_home” equal to 0.5 and report the following statistics:
+ =============================================================
+ */
 void experiment3(Disk *disk, BPlusTree *tree)
 {
     tree->setNumOfNodesSearched(0);
@@ -96,7 +96,7 @@ void experiment3(Disk *disk, BPlusTree *tree)
     chrono::high_resolution_clock::time_point before = chrono::high_resolution_clock::now();
     vector<Record *> *retrieved = tree->searchRecord(0.5);
     chrono::high_resolution_clock::time_point after = chrono::high_resolution_clock::now();
-    chrono::duration<double> timeTaken = chrono::duration_cast<chrono::duration<double> >(after - before);  // time taken to retrieve the movies
+    chrono::duration<double> timeTaken = chrono::duration_cast<chrono::duration<double>>(after - before); // time taken to retrieve the movies
 
     // finding the FG3_PCT_home values of all records where FG_PCT_Home = 0.5
     unordered_set<size_t> answer;
@@ -107,7 +107,7 @@ void experiment3(Disk *disk, BPlusTree *tree)
         totalFG3 += r->FG3_PCT_home;
     }
 
-    //brute force linear scan of disk, block by block, record by record
+    // brute force linear scan of disk, block by block, record by record
     int bruteForceBlocks = 0;
     Record *r;
     before = chrono::high_resolution_clock::now();
@@ -124,7 +124,7 @@ void experiment3(Disk *disk, BPlusTree *tree)
         }
     }
     after = chrono::high_resolution_clock::now();
-    chrono::duration<double> bruteForceTime = chrono::duration_cast<chrono::duration<double> >(after - before);
+    chrono::duration<double> bruteForceTime = chrono::duration_cast<chrono::duration<double>>(after - before);
 
     cout << "Experiment 3:" << endl;
     cout << "Number of index nodes processed: " << tree->getNumOfNodesSearched() << endl;
@@ -136,9 +136,9 @@ void experiment3(Disk *disk, BPlusTree *tree)
     cout << endl;
 }
 
-  /*
-  =============================================================
-  Experiment 4: retrieve those records with the attribute “FG_PCT_home” from 0.6 to 1, both inclusively and report the following statistics:
+/*
+=============================================================
+Experiment 4: retrieve those records with the attribute “FG_PCT_home” from 0.6 to 1, both inclusively and report the following statistics:
 • the number of index nodes the process accesses;
 • the number of data blocks the process accesses;
 • the average of “FG3_PCT_home” of the records that are returned;
@@ -146,8 +146,8 @@ void experiment3(Disk *disk, BPlusTree *tree)
 • the number of data blocks that would be accessed by a brute-force
 linear scan method (i.e., it scans the data blocks one by one) and its
 running time (for comparison)
-  =============================================================
-  */
+=============================================================
+*/
 void experiment4(Disk *disk, BPlusTree *tree)
 {
     vector<Record *> result;
@@ -224,12 +224,13 @@ void experiment4(Disk *disk, BPlusTree *tree)
     cout << "Running time for retrieval process: " << timeTaken.count() << "s" << endl;
     cout << "Number of data blocks accessed by brute force method: " << bruteForceBlocks << endl;
     cout << "Running time for retrival by brute force method: " << bruteTimeTaken.count() << "s" << endl;
+    cout << "Number of nodes of the updated B+ Tree = " << tree->getTotalNumOfNodes() << endl;
     cout << endl;
 }
 
-  /*
-  =============================================================
-  Experiment 5: delete those movies with the attribute “FG_PCT_home” below 0.35 inclusively, update the B+ tree accordingly, and report the following statistics:
+/*
+=============================================================
+Experiment 5: delete those movies with the attribute “FG_PCT_home” below 0.35 inclusively, update the B+ tree accordingly, and report the following statistics:
 • the number nodes of the updated B+ tree;
 • the number of levels of the updated B+ tree;
 CE4031-CZ4031
@@ -237,10 +238,44 @@ CE4031-CZ4031
 • the running time of the process;
 • the number of data blocks that would be accessed by a brute-force
 linear scan method (i.e., it scans the data blocks one by one) and its running time (for comparison)
-  =============================================================
-  */
+=============================================================
+*/
+void experiment5(Disk *disk, BPlusTree *tree)
+{
+    float keysToDeleteBelow = 0.35;
+    chrono::high_resolution_clock::time_point before = chrono::high_resolution_clock::now();
+    tree->deleteKey(keysToDeleteBelow);
+    chrono::high_resolution_clock::time_point after = chrono::high_resolution_clock::now();
+    chrono::duration<double> timeTaken = chrono::duration_cast<chrono::duration<double>>(after - before);
 
+    int numOfBlocksAcc = 0;
+    Record *r;
+    before = chrono::high_resolution_clock::now();
+    for (int i = 0; i < disk->getNumOfBlocksUsed(); i++)
+    {
+        numOfBlocksAcc++;
+        for (int j = 0; j < disk->getRecordsPerBlock(); j++)
+        {
+            r = disk->getRecord(i, j);
+            if (r->FG_PCT_home <= keysToDeleteBelow)
+            {
+                continue;
+            }
+        }
+    }
+    after = chrono::high_resolution_clock::now();
+    chrono::duration<double> bruteTimeTaken = chrono::duration_cast<chrono::duration<double>>(after - before);
 
+    cout << "Experiment 5:" << endl;
+    cout << "Number of nodes of the updated B+ Tree = " << tree->getTotalNumOfNodes() << endl;
+    cout << "Number of levels of the updated B+ Tree = " << tree->getNumOfLevels() << endl;
+    cout << "Content of Root Node of updated B+ Tree: ";
+    tree->printKeys(tree->getRoot());
+    cout << "Running time for deletion process = " << timeTaken.count() << "s" << endl;
+    cout << "Number of data blocks accessed by brute force method = " << numOfBlocksAcc << endl;
+    cout << "Running time for deletion by brute force method = " << bruteTimeTaken.count() << "s" << endl;
+    cout << endl;
+}
 
 int main()
 {
@@ -250,7 +285,6 @@ int main()
     Disk disk(DISKSIZE, BLOCKSIZE);
     BPlusTree tree(BLOCKSIZE);
 
-
     experiment1(&disk, &tree);
 
     experiment2(&tree);
@@ -258,20 +292,6 @@ int main()
     experiment3(&disk, &tree);
 
     experiment4(&disk, &tree);
+
+    experiment5(&disk, &tree);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
