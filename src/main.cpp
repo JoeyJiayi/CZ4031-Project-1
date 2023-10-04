@@ -273,7 +273,6 @@ void experiment5(Disk *disk, BPlusTree *tree)
     tree->printKeys(tree->getRoot());
     cout << "Running time for deletion process = " << timeTaken.count() << "s" << endl;
     cout << "Number of data blocks accessed by brute force method = " << numOfBlocksAcc << endl;
-    cout << "Running time for deletion by brute force method = " << bruteTimeTaken.count() << "s" << endl;
     cout << endl;
 }
 

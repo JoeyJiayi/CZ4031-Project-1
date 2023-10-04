@@ -58,7 +58,6 @@ void BPlusTree::deleteKeyBelow(float key)
         }
         if (curNode->keys.size() >= minKeys)
         {
-            std::cout << "CASE 1" << std::endl;
             // Case 1: Leaf node has > minimum num of keys
             if (idx != 0)
             {
@@ -88,7 +87,6 @@ void BPlusTree::deleteKeyBelow(float key)
         }
         else
         {
-            std::cout << "CASE 2" << std::endl;
             // Case 2: Leaf node now has less than min num of keys
             int parentIdx = prevIdxs.back();
             prevIdxs.pop_back();
@@ -98,7 +96,6 @@ void BPlusTree::deleteKeyBelow(float key)
 
             if (parentIdx > 0)
             {
-                std::cout << "CASE 2.1" << std::endl;
                 // Left neighbour from the same parent node exists
                 leftNeighbour = parentNode->pointers.at(parentIdx - 1);
                 if (leftNeighbour->keys.size() > minKeys)
@@ -114,12 +111,10 @@ void BPlusTree::deleteKeyBelow(float key)
             }
             if (parentIdx < parentNode->keys.size() - 1)
             {
-                std::cout << "CASE 2.2" << std::endl;
                 // Right neighbour from the same parent node exists
                 rightNeighbour = parentNode->pointers.at(parentIdx + 1);
                 if (rightNeighbour->keys.size() > minKeys)
                 {
-                    std::cout << "CASE 2.3" << std::endl;
                     // Case 2a: Borrow key from right neighbour
                     curNode->keys.insert(curNode->keys.end(), rightNeighbour->keys.front());
                     curNode->records.insert(curNode->records.end(), rightNeighbour->records.front());
@@ -129,7 +124,6 @@ void BPlusTree::deleteKeyBelow(float key)
 
                     if (!idx)
                     {
-                        std::cout << "CASE 2.4" << std::endl;
                         this->updateParentKeys(curNode, parentNode, parentIdx, parents, prevIdxs);
                     }
                     continue;
@@ -139,7 +133,6 @@ void BPlusTree::deleteKeyBelow(float key)
             // Check if left neighbour exists, if it does merge with it, else merge with right neighbour
             if (leftNeighbour != nullptr)
             {
-                std::cout << "CASE 2.5" << std::endl;
                 // Left neighbour exists but has min keys -> MERGE
                 while (curNode->keys.size() != 0)
                 {
@@ -154,7 +147,6 @@ void BPlusTree::deleteKeyBelow(float key)
             }
             else
             {
-                std::cout << "CASE 2.6" << std::endl;
                 // Right neighbour exists but has min keys -> MERGE
                 while (rightNeighbour->keys.size() != 0)
                 {
@@ -164,9 +156,7 @@ void BPlusTree::deleteKeyBelow(float key)
                     rightNeighbour->records.erase(rightNeighbour->records.begin());
                 }
                 curNode->nextLeaf = rightNeighbour->nextLeaf;
-                std::cout << "CASE 2.6!!" << std::endl;
                 this->removeInternal(parentNode->keys.at(parentIdx), parentNode, rightNeighbour);
-                std::cout << "CASE 2.6!" << std::endl;
                 // if (!idx){
                 //     this->updateParentKeys(curNode, parentNode, parentIdx, parents, prevIdxs);
                 // }
@@ -368,7 +358,6 @@ Node *BPlusTree::findParentNode(Node *parentNode, Node *childNode)
 
 void BPlusTree::removeInternal(float key, Node *parentNode, Node *nodeToDelete)
 {
-    std::cout << "removeInternal" << std::endl;
     if (parentNode == this->root)
     {
         if (parentNode->keys.size() == 1)
@@ -384,7 +373,6 @@ void BPlusTree::removeInternal(float key, Node *parentNode, Node *nodeToDelete)
             return;
         }
     }
-    std::cout << "removeInternal 1.0" << std::endl;
     // Delete the nodeToDelete
     int idx = std::lower_bound(parentNode->keys.begin(), parentNode->keys.end(), key) - parentNode->keys.begin();
     parentNode->keys.erase(parentNode->keys.begin() + idx);
@@ -397,20 +385,16 @@ void BPlusTree::removeInternal(float key, Node *parentNode, Node *nodeToDelete)
     }
     parentNode->pointers.erase(parentNode->pointers.begin() + idx);
     this->numOfNodes--;
-    std::cout << "removeInternal 2.0" << std::endl;
     // Return if the parentNode has more than the min number of keys
     if (parentNode->keys.size() >= this->maxNumOfKeys / 2)
     {
-        std::cout << "removeInternal 3.0" << std::endl;
         return;
     }
-    std::cout << "removeInternal 4.0" << std::endl;
     // Find the parentNode's left and right neighbours
     Node *ancestorNode = this->findParentNode(this->root, parentNode);
     if (ancestorNode == nullptr)
     {
         // parent node is root node
-        std::cout << "removeInternal 5.0" << std::endl;
         return;
     }
     for (idx = 0; idx < ancestorNode->pointers.size(); idx++)
