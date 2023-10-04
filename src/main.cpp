@@ -26,7 +26,7 @@ void experiment1(Disk *disk, BPlusTree *tree)
     cout << "Experiment 1:" << endl;
 
     // opening of data file
-    ifstream file("../data/games.txt");
+    ifstream file("src/data/games.txt");
     if (!file.is_open())
     {
         cout << "File failed to open." << endl;
@@ -93,10 +93,16 @@ void experiment3(Disk *disk, BPlusTree *tree)
 {
     tree->setNumOfNodesSearched(0);
 
-    chrono::high_resolution_clock::time_point before = chrono::high_resolution_clock::now();
+    auto before = chrono::steady_clock::now();
     vector<Record *> *retrieved = tree->searchRecord(0.5);
-    chrono::high_resolution_clock::time_point after = chrono::high_resolution_clock::now();
-    chrono::duration<double> timeTaken = chrono::duration_cast<chrono::duration<double>>(after - before); // time taken to retrieve the movies
+    auto after = chrono::steady_clock::now();
+    auto timeTaken = chrono::duration_cast<chrono::nanoseconds>(after - before);
+
+
+//    chrono::high_resolution_clock::time_point before = chrono::high_resolution_clock::now();
+//    vector<Record *> *retrieved = tree->searchRecord(0.5);
+//    chrono::high_resolution_clock::time_point after = chrono::high_resolution_clock::now();
+//    chrono::duration<double> timeTaken = chrono::duration_cast<chrono::duration<double>>(after - before); // time taken to retrieve the movies
 
     // finding the FG3_PCT_home values of all records where FG_PCT_Home = 0.5
     unordered_set<size_t> answer;
@@ -110,7 +116,7 @@ void experiment3(Disk *disk, BPlusTree *tree)
     // brute force linear scan of disk, block by block, record by record
     int bruteForceBlocks = 0;
     Record *r;
-    before = chrono::high_resolution_clock::now();
+    before = chrono::steady_clock::now();
     for (int i = 0; i < disk->getNumOfBlocksUsed(); i++)
     {
         bruteForceBlocks++;
@@ -123,16 +129,16 @@ void experiment3(Disk *disk, BPlusTree *tree)
             }
         }
     }
-    after = chrono::high_resolution_clock::now();
-    chrono::duration<double> bruteForceTime = chrono::duration_cast<chrono::duration<double>>(after - before);
+    after = chrono::steady_clock::now();
+    auto bruteForceTime = chrono::duration_cast<chrono::nanoseconds>(after - before);
 
     cout << "Experiment 3:" << endl;
     cout << "Number of index nodes processed: " << tree->getNumOfNodesSearched() << endl;
     cout << "Number of data blocks processed: " << answer.size() << endl;
     cout << "Average of FG3_PCT_home of all the records returned: " << totalFG3 / retrieved->size() << endl;
-    cout << "Running time of retrieval process: " << timeTaken.count() << "s" << endl;
+    cout << "Running time of retrieval process: " << timeTaken.count() << "ns" << endl;
     cout << "Number of data blocks accessed by brute-force linear scan method: " << bruteForceBlocks << endl;
-    cout << "Running time of brute-force linear scan method: " << bruteForceTime.count() << "s" << endl;
+    cout << "Running time of brute-force linear scan method: " << bruteForceTime.count() << "ns" << endl;
     cout << endl;
 }
 
@@ -158,7 +164,7 @@ void experiment4(Disk *disk, BPlusTree *tree)
     bool searching = true;
     tree->setNumOfNodesSearched(0);
 
-    chrono::high_resolution_clock::time_point before = chrono::high_resolution_clock::now();
+    auto before = chrono::steady_clock::now();
     Node *resultNode = tree->searchNode(lower);
 
     while (searching)
@@ -188,8 +194,8 @@ void experiment4(Disk *disk, BPlusTree *tree)
         }
     }
 
-    chrono::high_resolution_clock::time_point after = chrono::high_resolution_clock::now();
-    chrono::duration<double> timeTaken = chrono::duration_cast<chrono::duration<double>>(after - before);
+    auto after = chrono::steady_clock::now();
+    auto timeTaken = chrono::duration_cast<chrono::nanoseconds>(after - before);
 
     unordered_set<size_t> resultSet;
     float totalFG3 = 0;
@@ -201,7 +207,7 @@ void experiment4(Disk *disk, BPlusTree *tree)
 
     int bruteForceBlocks = 0;
     Record *r;
-    before = chrono::high_resolution_clock::now();
+    before = chrono::steady_clock::now();
     for (int i = 0; i < disk->getNumOfBlocksUsed(); i++)
     {
         bruteForceBlocks++;
@@ -214,17 +220,16 @@ void experiment4(Disk *disk, BPlusTree *tree)
             }
         }
     }
-    after = chrono::high_resolution_clock::now();
-    chrono::duration<double> bruteTimeTaken = chrono::duration_cast<chrono::duration<double>>(after - before);
+    after = chrono::steady_clock::now();
+    auto bruteTimeTaken = chrono::duration_cast<chrono::nanoseconds>(after - before);
 
     cout << "Experiment 4:" << endl;
-    cout << "Number of index blocks accessed: " << tree->getNumOfNodesSearched() + leafNodesSearched << endl;
+    cout << "Number of index nodes accessed: " << tree->getNumOfNodesSearched() + leafNodesSearched << endl;
     cout << "Number of data blocks accessed: " << resultSet.size() << endl;
     cout << "Average of FG3_PCT_home of all the records returned: " << totalFG3 / result.size() << endl;
-    cout << "Running time for retrieval process: " << timeTaken.count() << "s" << endl;
+    cout << "Running time for retrieval process: " << timeTaken.count() << "ns" << endl;
     cout << "Number of data blocks accessed by brute force method: " << bruteForceBlocks << endl;
-    cout << "Running time for retrival by brute force method: " << bruteTimeTaken.count() << "s" << endl;
-    cout << "Number of nodes of the updated B+ Tree = " << tree->getTotalNumOfNodes() << endl;
+    cout << "Running time for retrival by brute force method: " << bruteTimeTaken.count() << "ns" << endl;
     cout << endl;
 }
 
@@ -243,14 +248,14 @@ linear scan method (i.e., it scans the data blocks one by one) and its running t
 void experiment5(Disk *disk, BPlusTree *tree)
 {
     float keysToDeleteBelow = 0.35;
-    chrono::high_resolution_clock::time_point before = chrono::high_resolution_clock::now();
+    auto before = chrono::steady_clock::now();
     tree->deleteKeyBelow(keysToDeleteBelow);
-    chrono::high_resolution_clock::time_point after = chrono::high_resolution_clock::now();
-    chrono::duration<double> timeTaken = chrono::duration_cast<chrono::duration<double>>(after - before);
+    auto after = chrono::steady_clock::now();
+    auto timeTaken = chrono::duration_cast<chrono::nanoseconds>(after - before);
 
     int numOfBlocksAcc = 0;
     Record *r;
-    before = chrono::high_resolution_clock::now();
+    before = chrono::steady_clock::now();
     for (int i = 0; i < disk->getNumOfBlocksUsed(); i++)
     {
         numOfBlocksAcc++;
@@ -263,16 +268,20 @@ void experiment5(Disk *disk, BPlusTree *tree)
             }
         }
     }
-    after = chrono::high_resolution_clock::now();
-    chrono::duration<double> bruteTimeTaken = chrono::duration_cast<chrono::duration<double>>(after - before);
+    after = chrono::steady_clock::now();
+    auto bruteTimeTaken = chrono::duration_cast<chrono::nanoseconds>(after - before);
 
     cout << "Experiment 5:" << endl;
     cout << "Number of nodes of the updated B+ Tree = " << tree->getTotalNumOfNodes() << endl;
     cout << "Number of levels of the updated B+ Tree = " << tree->getNumOfLevels() << endl;
     cout << "Content of Root Node of updated B+ Tree: ";
     tree->printKeys(tree->getRoot());
-    cout << "Running time for deletion process = " << timeTaken.count() << "s" << endl;
+    cout << "Running time for deletion process = " << timeTaken.count() << "ns" << endl;
     cout << "Number of data blocks accessed by brute force method = " << numOfBlocksAcc << endl;
+<<<<<<< Updated upstream
+=======
+    cout << "Running time for deletion by brute force method = " << bruteTimeTaken.count() << "ns" << endl;
+>>>>>>> Stashed changes
     cout << endl;
 }
 
