@@ -6,12 +6,6 @@
 #include <unordered_set>
 #include "storage/disk.h"
 #include "b_plus_tree/b_plus_tree.h"
-/*
-#include "storage/disk.cpp"
-#include "b_plus_tree/b_plus_tree_insert.cpp"
-#include "b_plus_tree/b_plus_tree_remove.cpp"
-#include "b_plus_tree/b_plus_tree_search.cpp"
-*/
 
 using namespace std;
 

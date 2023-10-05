@@ -12,7 +12,7 @@ private:
     Node *nextLeaf;
     std::vector<Node *> pointers; // a pointer to an array of nodes in this disk
     std::vector<float> keys;      // a pointer to an array of keys in this node
-    std::vector<std::vector<Record *> > records;
+    std::vector<std::vector<Record *>> records;
     int numOfKeys; // current number of keys in this node
 
 public:
