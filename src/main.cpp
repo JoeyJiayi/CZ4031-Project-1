@@ -89,6 +89,7 @@ void experiment2(BPlusTree *tree)
  Experiment 3: Retrieve those games with the “FG_PCT_home” equal to 0.5 and report the following statistics:
  =============================================================
  */
+
 void experiment3(Disk *disk, BPlusTree *tree)
 {
     tree->setNumOfNodesSearched(0);
@@ -98,13 +99,7 @@ void experiment3(Disk *disk, BPlusTree *tree)
     auto after = chrono::steady_clock::now();
     auto timeTaken = chrono::duration_cast<chrono::nanoseconds>(after - before);
 
-
-//    chrono::high_resolution_clock::time_point before = chrono::high_resolution_clock::now();
-//    vector<Record *> *retrieved = tree->searchRecord(0.5);
-//    chrono::high_resolution_clock::time_point after = chrono::high_resolution_clock::now();
-//    chrono::duration<double> timeTaken = chrono::duration_cast<chrono::duration<double>>(after - before); // time taken to retrieve the movies
-
-    // finding the FG3_PCT_home values of all records where FG_PCT_Home = 0.5
+    // finding the FG3_PCT_home values of all records where FG_PCT_home = 0.5
     unordered_set<size_t> answer;
     float totalFG3 = 0;
     for (Record *r : *retrieved)
@@ -132,13 +127,14 @@ void experiment3(Disk *disk, BPlusTree *tree)
     after = chrono::steady_clock::now();
     auto bruteForceTime = chrono::duration_cast<chrono::nanoseconds>(after - before);
 
+    // experiment 3 log
     cout << "Experiment 3:" << endl;
     cout << "Number of index nodes processed: " << tree->getNumOfNodesSearched() << endl;
     cout << "Number of data blocks processed: " << answer.size() << endl;
     cout << "Average of FG3_PCT_home of all the records returned: " << totalFG3 / retrieved->size() << endl;
-    cout << "Running time of retrieval process: " << timeTaken.count() << "ns" << endl;
+    cout << "Running time of retrieval process (in nanoseconds): " << timeTaken.count() << "ns" << endl;
     cout << "Number of data blocks accessed by brute-force linear scan method: " << bruteForceBlocks << endl;
-    cout << "Running time of brute-force linear scan method: " << bruteForceTime.count() << "ns" << endl;
+    cout << "Running time of brute-force linear scan method (in nanoseconds): " << bruteForceTime.count() << "ns" << endl;
     cout << endl;
 }
 
@@ -167,6 +163,7 @@ void experiment4(Disk *disk, BPlusTree *tree)
     auto before = chrono::steady_clock::now();
     Node *resultNode = tree->searchNode(lower);
 
+    // locating of first record where key >= lower
     while (searching)
     {
         keys = resultNode->getKeys();
@@ -197,6 +194,7 @@ void experiment4(Disk *disk, BPlusTree *tree)
     auto after = chrono::steady_clock::now();
     auto timeTaken = chrono::duration_cast<chrono::nanoseconds>(after - before);
 
+    // finding the FG3_PCT_home values of all records where 0.6 <= FG_PCT_home <= 1.0
     unordered_set<size_t> resultSet;
     float totalFG3 = 0;
     for (Record *r : result)
@@ -205,6 +203,7 @@ void experiment4(Disk *disk, BPlusTree *tree)
         totalFG3 += r->FG3_PCT_home;
     }
 
+    // brute force linear scan of disk, block by block, record by record
     int bruteForceBlocks = 0;
     Record *r;
     before = chrono::steady_clock::now();
@@ -223,13 +222,14 @@ void experiment4(Disk *disk, BPlusTree *tree)
     after = chrono::steady_clock::now();
     auto bruteTimeTaken = chrono::duration_cast<chrono::nanoseconds>(after - before);
 
+    // experiment 4 log
     cout << "Experiment 4:" << endl;
     cout << "Number of index nodes accessed: " << tree->getNumOfNodesSearched() + leafNodesSearched << endl;
     cout << "Number of data blocks accessed: " << resultSet.size() << endl;
     cout << "Average of FG3_PCT_home of all the records returned: " << totalFG3 / result.size() << endl;
-    cout << "Running time for retrieval process: " << timeTaken.count() << "ns" << endl;
+    cout << "Running time for retrieval process (in nanoseconds): " << timeTaken.count() << "ns" << endl;
     cout << "Number of data blocks accessed by brute force method: " << bruteForceBlocks << endl;
-    cout << "Running time for retrival by brute force method: " << bruteTimeTaken.count() << "ns" << endl;
+    cout << "Running time for retrival by brute force method (in nanoseconds): " << bruteTimeTaken.count() << "ns" << endl;
     cout << endl;
 }
 
@@ -247,6 +247,7 @@ linear scan method (i.e., it scans the data blocks one by one) and its running t
 */
 void experiment5(Disk *disk, BPlusTree *tree)
 {
+    // deletion of all records with key <= 0.35
     float keysToDeleteBelow = 0.35;
     auto before = chrono::steady_clock::now();
     tree->deleteKeyBelow(keysToDeleteBelow);
@@ -256,6 +257,9 @@ void experiment5(Disk *disk, BPlusTree *tree)
     int numOfBlocksAcc = 0;
     Record *r;
     before = chrono::steady_clock::now();
+
+    // brute force linear scan of disk, block by block, record by record
+    vector<float> selectedKeys;
     for (int i = 0; i < disk->getNumOfBlocksUsed(); i++)
     {
         numOfBlocksAcc++;
@@ -266,22 +270,21 @@ void experiment5(Disk *disk, BPlusTree *tree)
             {
                 continue;
             }
+            selectedKeys.push_back(r->FG_PCT_home);
         }
     }
     after = chrono::steady_clock::now();
     auto bruteTimeTaken = chrono::duration_cast<chrono::nanoseconds>(after - before);
 
+    // experiment 5 log
     cout << "Experiment 5:" << endl;
-    cout << "Number of nodes of the updated B+ Tree = " << tree->getTotalNumOfNodes() << endl;
-    cout << "Number of levels of the updated B+ Tree = " << tree->getNumOfLevels() << endl;
+    cout << "Number of nodes of the updated B+ Tree: " << tree->getTotalNumOfNodes() << endl;
+    cout << "Number of levels of the updated B+ Tree: " << tree->getNumOfLevels() << endl;
     cout << "Content of Root Node of updated B+ Tree: ";
     tree->printKeys(tree->getRoot());
-    cout << "Running time for deletion process = " << timeTaken.count() << "ns" << endl;
-    cout << "Number of data blocks accessed by brute force method = " << numOfBlocksAcc << endl;
-<<<<<<< Updated upstream
-=======
-    cout << "Running time for deletion by brute force method = " << bruteTimeTaken.count() << "ns" << endl;
->>>>>>> Stashed changes
+    cout << "Running time for deletion process (in nanoseconds): " << timeTaken.count() << "ns" << endl;
+    cout << "Number of data blocks accessed by brute force method: " << numOfBlocksAcc << endl;
+    cout << "Running time for deletion by brute force method (in nanoseconds): " << bruteTimeTaken.count() << "ns" << endl;
     cout << endl;
 }
 
