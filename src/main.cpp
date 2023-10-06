@@ -20,7 +20,7 @@ void experiment1(Disk *disk, BPlusTree *tree)
     cout << "Experiment 1:" << endl;
 
     // opening of data file
-    ifstream file("src/data/games.txt");
+    ifstream file("data/games.txt");
     if (!file.is_open())
     {
         cout << "File failed to open." << endl;
