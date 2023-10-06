@@ -3,7 +3,7 @@
 
 void BPlusTree::insert(float key, Record *recordPtr)
 {
-    // Case 1:duplicate records being inserted
+    // Case 1: duplicate records being inserted
     std::vector<Record *> *records = this->searchRecord(key);
     if (records != nullptr)
     {

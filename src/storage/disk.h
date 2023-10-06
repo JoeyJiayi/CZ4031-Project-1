@@ -53,6 +53,8 @@ class Disk{
         size_t getNumOfBlocksUsed();
 
         size_t getRecordsPerBlock();
+
+        size_t getTotalMemoryUsed();
     };
 
 #endif

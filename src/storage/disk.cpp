@@ -105,3 +105,9 @@ size_t Disk::getRecordsPerBlock()
 {
     return maxRecordsPerBlock;
 }
+
+// return total memory used
+size_t Disk::getTotalMemoryUsed()
+{
+    return totalMemoryUsed;
+}
